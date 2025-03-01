@@ -332,7 +332,3 @@ const MentorMatch: React.FC<MentorMatchProps> = ({ preferredLanguage }) => {
 };
 
 export default MentorMatch;
-  );
-};
-
-export default MentorMatch;
