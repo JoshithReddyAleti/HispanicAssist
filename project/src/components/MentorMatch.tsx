@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Users, Search, Star, Calendar, MapPin, Languages } from 'lucide-react';
+import { Users, Search, Star, Calendar, MapPin, Languages, GraduationCap, BookOpen, Code, Calculator, Beaker, History, Globe } from 'lucide-react';
 
 interface MentorMatchProps {
   preferredLanguage: 'en' | 'es';
@@ -10,7 +10,46 @@ const MentorMatch: React.FC<MentorMatchProps> = ({ preferredLanguage }) => {
   const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(null);
   const [language, setLanguage] = useState<'en' | 'es'>(preferredLanguage);
   
-  // Mock mentors data
+  // UNCOMMENT THIS SECTION TO USE THE ACTUAL SUPABASE API
+  /*
+  const [mentors, setMentors] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    const fetchMentors = async () => {
+      try {
+        setLoading(true);
+        // Fetch mentors from Supabase
+        const { data, error } = await supabase
+          .from('mentors')
+          .select(`
+            id,
+            name,
+            bio,
+            specialties,
+            availability,
+            location,
+            rating,
+            imageUrl
+          `);
+          
+        if (error) throw error;
+        
+        if (data) {
+          setMentors(data);
+        }
+      } catch (error) {
+        console.error('Error fetching mentors:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchMentors();
+  }, []);
+  */
+  
+  // Mock mentors data with 3 examples
   const mentors = [
     {
       id: '1',
@@ -71,6 +110,43 @@ const MentorMatch: React.FC<MentorMatchProps> = ({ preferredLanguage }) => {
       location: 'Sandy Springs',
       rating: 4.6,
       imageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=256&q=80'
+    },
+    // Additional mentors
+    {
+      id: '6',
+      name: 'Ana Lucia Ortiz',
+      bio: language === 'en'
+        ? 'History professor specializing in Latin American studies and immigration history.'
+        : 'Profesora de Historia especializada en estudios latinoamericanos e historia de la inmigración.',
+      specialties: ['History', 'Latin American Studies', 'Immigration'],
+      availability: language === 'en' ? 'Weekdays 1-5 PM' : 'Días laborables 1-5 PM',
+      location: 'Brookhaven',
+      rating: 4.9,
+      imageUrl: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=256&q=80'
+    },
+    {
+      id: '7',
+      name: 'Diego Morales',
+      bio: language === 'en'
+        ? 'Physics and Engineering tutor with NASA research experience and robotics expertise.'
+        : 'Tutor de Física e Ingeniería con experiencia en investigación de la NASA y experiencia en robótica.',
+      specialties: ['Physics', 'Engineering', 'Robotics'],
+      availability: language === 'en' ? 'Weekends and Thursday evenings' : 'Fines de semana y jueves por la noche',
+      location: 'Dunwoody',
+      rating: 4.8,
+      imageUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=256&q=80'
+    },
+    {
+      id: '8',
+      name: 'Sofia Ramirez',
+      bio: language === 'en'
+        ? 'Psychology professor and mental health counselor specializing in adolescent development and stress management.'
+        : 'Profesora de Psicología y consejera de salud mental especializada en desarrollo adolescente y manejo del estrés.',
+      specialties: ['Psychology', 'Mental Health', 'Counseling'],
+      availability: language === 'en' ? 'Monday, Wednesday, Friday afternoons' : 'Lunes, miércoles y viernes por la tarde',
+      location: 'Chamblee',
+      rating: 4.9,
+      imageUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=256&q=80'
     }
   ];
 
@@ -94,6 +170,34 @@ const MentorMatch: React.FC<MentorMatchProps> = ({ preferredLanguage }) => {
 
   const toggleLanguage = () => {
     setLanguage(prev => prev === 'en' ? 'es' : 'en');
+  };
+
+  // Function to get appropriate icon for specialty
+  const getSpecialtyIcon = (specialty: string) => {
+    switch(specialty.toLowerCase()) {
+      case 'computer science':
+      case 'programming':
+        return <Code className="h-3 w-3" />;
+      case 'mathematics':
+      case 'statistics':
+        return <Calculator className="h-3 w-3" />;
+      case 'biology':
+      case 'chemistry':
+      case 'physics':
+        return <Beaker className="h-3 w-3" />;
+      case 'history':
+      case 'latin american studies':
+        return <History className="h-3 w-3" />;
+      case 'english':
+      case 'writing':
+      case 'spanish':
+        return <BookOpen className="h-3 w-3" />;
+      case 'test prep':
+      case 'college applications':
+        return <GraduationCap className="h-3 w-3" />;
+      default:
+        return <Globe className="h-3 w-3" />;
+    }
   };
 
   return (
@@ -188,9 +292,10 @@ const MentorMatch: React.FC<MentorMatchProps> = ({ preferredLanguage }) => {
                     {mentor.specialties.map(specialty => (
                       <span 
                         key={specialty}
-                        className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full text-xs"
+                        className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full text-xs flex items-center"
                       >
-                        {specialty}
+                        {getSpecialtyIcon(specialty)}
+                        <span className="ml-1">{specialty}</span>
                       </span>
                     ))}
                   </div>
@@ -223,6 +328,10 @@ const MentorMatch: React.FC<MentorMatchProps> = ({ preferredLanguage }) => {
           : 'Conéctate con mentores hispanos en tu área para orientación académica y profesional.'}
       </div>
     </div>
+  );
+};
+
+export default MentorMatch;
   );
 };
 
