@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Bus, Train, MapPin, Clock, Search, Languages, Loader2, Navigation } from 'lucide-react';
-import axios from 'axios';
+
 
 interface TransitGuideProps {
   preferredLanguage: 'en' | 'es';
@@ -66,8 +66,26 @@ const TransitGuide: React.FC<TransitGuideProps> = ({ preferredLanguage }) => {
         try {
           const { latitude, longitude } = position.coords;
           
+          // UNCOMMENT THIS SECTION TO USE THE ACTUAL GOOGLE MAPS GEOCODING API
+          /*
           // Reverse geocoding to get address from coordinates
-          // In a real app, you would use Google Maps Geocoding API
+          const response = await axios.get(
+            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${process.env.GOOGLE_MAPS_API_KEY}`
+          );
+          
+          if (response.data.results && response.data.results.length > 0) {
+            const address = response.data.results[0].formatted_address;
+            setUserLocation({
+              latitude,
+              longitude,
+              address
+            });
+            setOrigin(address);
+          } else {
+            throw new Error('No address found');
+          }
+          */
+          
           // For demo purposes, we'll simulate this
           await new Promise(resolve => setTimeout(resolve, 1000));
           
@@ -118,7 +136,7 @@ const TransitGuide: React.FC<TransitGuideProps> = ({ preferredLanguage }) => {
           default:
             setLocationError(
               language === 'en'
-                ? 'An unknown error occurred'
+                ? 'An unknown error occurre d'
                 : 'Ocurrió un error desconocido'
             );
         }
@@ -133,87 +151,116 @@ const TransitGuide: React.FC<TransitGuideProps> = ({ preferredLanguage }) => {
     setIsLoading(true);
     
     try {
-      // This would be an API call to MARTA API or Google Maps Directions API
+      // UNCOMMENT THIS SECTION TO USE THE ACTUAL MARTA API OR GOOGLE MAPS DIRECTIONS API
+      /*
+      // Example using Google Maps Directions API
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/directions/json?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&mode=transit&key=${process.env.GOOGLE_MAPS_API_KEY}`
+      );
+      
+      // Process the response to create Route objects
+      const routes = response.data.routes.map((route, index) => {
+        // Extract relevant information from the Google Maps response
+        // This is a simplified example and would need to be expanded for a real application
+        return {
+          id: index.toString(),
+          type: 'mixed', // Determine based on legs
+          name: `Route ${index + 1}`,
+          origin: origin,
+          destination: destination,
+          duration: route.legs[0].duration.text,
+          departureTime: new Date(route.legs[0].departure_time.value).toLocaleTimeString(),
+          arrivalTime: new Date(route.legs[0].arrival_time.value).toLocaleTimeString(),
+          transfers: route.legs[0].steps.filter(step => step.travel_mode === 'TRANSIT').length - 1,
+          // Process steps to create segments and stops
+        };
+      });
+      
+      setRoutes(routes);
+      */
+      
       // For demo purposes, we'll simulate a response
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // Mock transit routes
-      const mockRoutes: Route[] = [
-        {
-          id: '1',
-          type: 'train',
-          name: language === 'en' ? 'Gold Line' : 'Línea Dorada',
-          origin: origin,
-          destination: destination,
-          duration: '35 min',
-          departureTime: '10:15 AM',
-          arrivalTime: '10:50 AM',
-          transfers: 0,
-          stops: [
-            'Five Points', 
-            'Peachtree Center', 
-            'Civic Center', 
-            'North Avenue', 
-            'Midtown', 
-            'Arts Center', 
-            'Lindbergh Center', 
-            'Lenox', 
-            'Brookhaven', 
-            'Chamblee', 
-            'Doraville'
-          ]
-        },
-        {
-          id: '2',
-          type: 'bus',
-          name: language === 'en' ? 'Route 39' : 'Ruta 39',
-          origin: origin,
-          destination: destination,
-          duration: '45 min',
-          departureTime: '10:05 AM',
-          arrivalTime: '10:50 AM',
-          transfers: 0,
-          stops: [
-            'GSU Student Center', 
-            'Peachtree Center', 
-            'North Avenue', 
-            'Midtown', 
-            'Arts Center', 
-            'Lindbergh Center'
-          ]
-        },
-        {
-          id: '3',
-          type: 'mixed',
-          name: language === 'en' ? 'Bus + Train' : 'Autobús + Tren',
-          origin: origin,
-          destination: destination,
-          duration: '50 min',
-          departureTime: '10:00 AM',
-          arrivalTime: '10:50 AM',
-          transfers: 1,
-          segments: [
-            {
-              type: 'bus',
-              name: language === 'en' ? 'Route 39' : 'Ruta 39',
-              from: origin,
-              to: 'Arts Center Station',
-              departureTime: '10:00 AM',
-              arrivalTime: '10:25 AM'
-            },
-            {
-              type: 'train',
-              name: language === 'en' ? 'Gold Line' : 'Línea Dorada',
-              from: 'Arts Center Station',
-              to: destination,
-              departureTime: '10:30 AM',
-              arrivalTime: '10:50 AM'
-            }
-          ]
-        }
-      ];
+      // Example 1: Gold Line train route
+      const goldLineRoute: Route = {
+        id: '1',
+        type: 'train',
+        name: language === 'en' ? 'Gold Line' : 'Línea Dorada',
+        origin: origin,
+        destination: destination,
+        duration: '35 min',
+        departureTime: '10:15 AM',
+        arrivalTime: '10:50 AM',
+        transfers: 0,
+        stops: [
+          'Five Points', 
+          'Peachtree Center', 
+          'Civic Center', 
+          'North Avenue', 
+          'Midtown', 
+          'Arts Center', 
+          'Lindbergh Center', 
+          'Lenox', 
+          'Brookhaven', 
+          'Chamblee', 
+          'Doraville'
+        ]
+      };
       
-      setRoutes(mockRoutes);
+      // Example 2: Bus route
+      const busRoute: Route = {
+        id: '2',
+        type: 'bus',
+        name: language === 'en' ? 'Route 39' : 'Ruta 39',
+        origin: origin,
+        destination: destination,
+        duration: '45 min',
+        departureTime: '10:05 AM',
+        arrivalTime: '10:50 AM',
+        transfers: 0,
+        stops: [
+          'GSU Student Center', 
+          'Peachtree Center', 
+          'North Avenue', 
+          'Midtown', 
+          'Arts Center', 
+          'Lindbergh Center'
+        ]
+      };
+      
+      // Example 3: Mixed bus and train route
+      const mixedRoute: Route = {
+        id: '3',
+        type: 'mixed',
+        name: language === 'en' ? 'Bus + Train' : 'Autobús + Tren',
+        origin: origin,
+        destination: destination,
+        duration: '50 min',
+        departureTime: '10:00 AM',
+        arrivalTime: '10:50 AM',
+        transfers: 1,
+        segments: [
+          {
+            type: 'bus',
+            name: language === 'en' ? 'Route 39' : 'Ruta 39',
+            from: origin,
+            to: 'Arts Center Station',
+            departureTime: '10:00 AM',
+            arrivalTime: '10:25 AM'
+          },
+          {
+            type: 'train',
+            name: language === 'en' ? 'Gold Line' : 'Línea Dorada',
+            from: 'Arts Center Station',
+            to: destination,
+            departureTime: '10:30 AM',
+            arrivalTime: '10:50 AM'
+          }
+        ]
+      };
+      
+      setRoutes([goldLineRoute, busRoute, mixedRoute]);
     } catch (error) {
       console.error('Error fetching transit routes:', error);
     } finally {
